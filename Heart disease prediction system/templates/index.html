@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioVision AI - Heart Disease Prediction System</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="dark-theme">
+    <!-- Ambient glowing background effects -->
+    <div class="ambient-glow glow-cyan"></div>
+    <div class="ambient-glow glow-crimson"></div>
+    <div class="ambient-glow glow-purple"></div>
+
+    <!-- Header Navigation Bar -->
+    <header class="navbar glass-panel">
+        <div class="brand">
+            <div class="logo-heart-wrap">
+                <svg class="heart-pulse-svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#heartGrad)" />
+                    <defs>
+                        <linearGradient id="heartGrad" x1="2" y1="3" x2="22" y2="21.35">
+                            <stop offset="0%" stop-color="#ff3366"/>
+                            <stop offset="100%" stop-color="#ff0055"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div class="pulse-ring"></div>
+            </div>
+            <div class="brand-text">
+                <div class="brand-title">CARDIO<span class="highlight-cyan">VISION</span> <span class="badge-ai">ML v2.5</span></div>
+                <div class="brand-subtitle">Heart Disease Prediction & Medical Image ML Framework</div>
+            </div>
+        </div>
+
+        <nav class="nav-tabs" id="navTabs">
+            <button class="nav-tab active" data-tab="pipeline-tab">
+                <span class="tab-icon">⚡</span> 1-Frame Pipeline
+            </button>
+            <button class="nav-tab" data-tab="diagnosis-tab">
+                <span class="tab-icon">🩺</span> Clinical Diagnosis
+            </button>
+            <button class="nav-tab" data-tab="evaluation-tab">
+                <span class="tab-icon">📊</span> ML Evaluation & Metrics
+            </button>
+            <button class="nav-tab" data-tab="code-tab">
+                <span class="tab-icon">💻</span> Code Studio & Runner
+            </button>
+            <button class="nav-tab" data-tab="guide-tab">
+                <span class="tab-icon">📖</span> Compile & Run Guide
+            </button>
+        </nav>
+
+        <div class="header-status">
+            <div class="status-pill online">
+                <span class="pulse-dot"></span>
+                <span>AI Pipeline Active</span>
+            </div>
+            <div class="ecg-mini-monitor">
+                <svg class="ecg-line-svg" viewBox="0 0 100 20" preserveAspectRatio="none">
+                    <polyline points="0,10 20,10 25,3 30,17 35,0 40,20 45,10 65,10 70,5 75,15 80,10 100,10"/>
+                </svg>
+                <span id="liveBpm">72 BPM</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: ONE-FRAME UNIFIED PIPELINE         -->
+        <!-- ========================================== -->
+        <section id="pipeline-tab" class="tab-panel active">
+            <!-- Pipeline Quick Control Banner -->
+            <div class="pipeline-master-bar glass-panel">
+                <div class="master-stepper">
+                    <div class="step-node active" data-step="1">
+                        <div class="step-num">1</div>
+                        <div class="step-label">Load Image</div>
+                    </div>
+                    <div class="step-connector active" id="conn-1"></div>
+                    <div class="step-node" data-step="2">
+                        <div class="step-num">2</div>
+                        <div class="step-label">Preprocessor</div>
+                    </div>
+                    <div class="step-connector" id="conn-2"></div>
+                    <div class="step-node" data-step="3">
+                        <div class="step-num">3</div>
+                        <div class="step-label">Feature Extraction</div>
+                    </div>
+                    <div class="step-connector" id="conn-3"></div>
+                    <div class="step-node" data-step="4">
+                        <div class="step-num">4</div>
+                        <div class="step-label">ML Training</div>
+                    </div>
+                    <div class="step-connector" id="conn-4"></div>
+                    <div class="step-node" data-step="5">
+                        <div class="step-num">5</div>
+                        <div class="step-label">Evaluation & Result</div>
+                    </div>
+                </div>
+
+                <div class="master-actions">
+                    <button id="btnAutoRunPipeline" class="btn btn-primary btn-glow">
+                        <span class="btn-icon">⚡</span> Run Complete 5-Stage Pipeline
+                    </button>
+                    <button id="btnResetPipeline" class="btn btn-outline">
+                        <span class="btn-icon">🔄</span> Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Single-Frame Split Grid Layout -->
+            <div class="one-frame-grid">
+                
+                <!-- LEFT COLUMN: STAGE 1 (LOAD) + STAGE 2 (PREPROCESS) -->
+                <div class="frame-column">
+                    
+                    <!-- STAGE 1: LOAD INPUT IMAGE -->
+                    <div class="card glass-panel" id="card-stage-1">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="stage-tag">STAGE 1</span>
+                                <h3>Load Input Cardiac Image</h3>
+                            </div>
+                            <span class="card-status-badge badge-ready" id="stage1-badge">Ready</span>
+                        </div>
+                        <div class="card-body">
+                            <!-- Preset Patient Selector -->
+                            <div class="selector-row">
+                                <label class="label-caption">Select Clinical Patient Record / ECG Trace:</label>
+                                <div class="sample-pills-wrap" id="samplePills">
+                                    {% for sample in samples %}
+                                    <button class="sample-pill {% if loop.first %}active{% endif %}" 
+                                            data-file="{{ sample.file }}"
+                                            data-id="{{ sample.id }}"
+                                            data-expected="{{ sample.expected_class }}"
+                                            data-age="{{ sample.patient.age }}"
+                                            data-gender="{{ sample.patient.gender }}"
+                                            data-bp="{{ sample.patient.bp }}"
+                                            data-hr="{{ sample.patient.hr }}"
+                                            data-desc="{{ sample.description }}">
+                                        {{ sample.title }}
+                                    </button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Upload or Drag Zone -->
+                            <div class="upload-dropzone" id="dropzone">
+                                <input type="file" id="fileInput" accept="image/*" class="file-input-hidden">
+                                <div class="dropzone-content">
+                                    <div class="upload-icon-circle">
+                                        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                    </div>
+                                    <p class="dropzone-main-text"><strong>Click to upload</strong> or drag and drop cardiac image</p>
+                                    <p class="dropzone-sub-text">PNG, JPG, BMP, DICOM traces (12-Lead ECG / Radiograph)</p>
+                                </div>
+                            </div>
+
+                            <!-- Patient Metadata Bar -->
+                            <div class="patient-meta-bar" id="patientMetaBar">
+                                <div class="meta-item"><span class="meta-k">Patient:</span> <span class="meta-v" id="pMetaName">Normal Sinus Rhythm</span></div>
+                                <div class="meta-item"><span class="meta-k">Age/Sex:</span> <span class="meta-v" id="pMetaDemographics">42y / Female</span></div>
+                                <div class="meta-item"><span class="meta-k">Resting BP:</span> <span class="meta-v" id="pMetaBp">118/76 mmHg</span></div>
+                                <div class="meta-item"><span class="meta-k">Heart Rate:</span> <span class="meta-v highlight-green" id="pMetaHr">72 bpm</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STAGE 2: PREPROCESSOR -->
+                    <div class="card glass-panel" id="card-stage-2">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="stage-tag">STAGE 2</span>
+                                <h3>Image Preprocessor</h3>
+                            </div>
+                            <span class="card-status-badge badge-pending" id="stage2-badge">Waiting</span>
+                        </div>
+                        <div class="card-body">
+                            <!-- Preprocessing Controls -->
+                            <div class="filter-controls-grid">
+                                <div class="control-group">
+                                    <div class="control-label-row">
+                                        <span>Contrast Factor</span>
+                                        <span class="control-val" id="valContrast">1.6x</span>
+                                    </div>
+                                    <input type="range" id="sliderContrast" min="0.5" max="3.0" step="0.1" value="1.6">
+                                </div>
+
+                                <div class="control-group">
+                                    <div class="control-label-row">
+                                        <span>Gaussian Denoising</span>
+                                        <span class="control-val" id="valNoise">1.2 px</span>
+                                    </div>
+                                    <input type="range" id="sliderNoise" min="0.1" max="3.0" step="0.1" value="1.2">
+                                </div>
+
+                                <div class="control-group">
+                                    <div class="control-label-row">
+                                        <span>Threshold Cutoff</span>
+                                        <span class="control-val" id="valThreshold">130</span>
+                                    </div>
+                                    <input type="range" id="sliderThreshold" min="30" max="230" step="5" value="130">
+                                </div>
+                            </div>
+
+                            <button id="btnRunPreprocess" class="btn btn-secondary btn-full">
+                                <span class="btn-icon">⚙️</span> Apply Preprocessing Pipeline
+                            </button>
+
+                            <!-- Multi-Stage Visual Inspection Gallery -->
+                            <div class="pre-gallery-tabs">
+                                <button class="pre-tab active" data-stage="original">Raw Input</button>
+                                <button class="pre-tab" data-stage="grayscale">Grayscale</button>
+                                <button class="pre-tab" data-stage="denoised">Denoised</button>
+                                <button class="pre-tab" data-stage="contrast_enhanced">Equalized</button>
+                                <button class="pre-tab" data-stage="thresholded">Segmented</button>
+                                <button class="pre-tab" data-stage="edges">Edge Map</button>
+                            </div>
+
+                            <div class="preview-canvas-container">
+                                <img id="previewImage" src="/static/samples/normal_sinus_rhythm.png" alt="Cardiac Image Preview" class="pipeline-preview-img">
+                                <div class="canvas-tag" id="currentStageTag">Raw Input Image</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT COLUMN: STAGE 3 (FEATURES) + STAGE 4 (TRAIN) + STAGE 5 (EVALUATE) -->
+                <div class="frame-column">
+
+                    <!-- STAGE 3: FEATURE EXTRACTION -->
+                    <div class="card glass-panel" id="card-stage-3">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="stage-tag">STAGE 3</span>
+                                <h3>Feature Extraction</h3>
+                            </div>
+                            <button id="btnRunFeatures" class="btn btn-sm btn-outline">
+                                <span class="btn-icon">📐</span> Extract Features
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <!-- Feature Summary Badges -->
+                            <div class="feature-badges-grid" id="featureSummaryBadges">
+                                <div class="feat-badge">
+                                    <div class="feat-k">Texture Uniformity</div>
+                                    <div class="feat-v" id="fHomogeneity">--%</div>
+                                </div>
+                                <div class="feat-badge">
+                                    <div class="feat-k">GLCM Contrast</div>
+                                    <div class="feat-v" id="fContrast">--</div>
+                                </div>
+                                <div class="feat-badge">
+                                    <div class="feat-k">Entropy Index</div>
+                                    <div class="feat-v" id="fEntropy">--</div>
+                                </div>
+                                <div class="feat-badge">
+                                    <div class="feat-k">Heart Rate (Est)</div>
+                                    <div class="feat-v highlight-cyan" id="fBpm">-- BPM</div>
+                                </div>
+                            </div>
+
+                            <!-- GLCM Heatmap & Feature Table Tabs -->
+                            <div class="subtabs-bar">
+                                <button class="subtab active" data-subtab="glcm-matrix-view">GLCM 8x8 Matrix</button>
+                                <button class="subtab" data-subtab="vector-table-view">14-Feature Vector</button>
+                            </div>
+
+                            <div id="glcm-matrix-view" class="subtab-panel active">
+                                <div class="glcm-container">
+                                    <div class="glcm-grid" id="glcmGrid">
+                                        <!-- Rendered dynamically -->
+                                    </div>
+                                    <div class="glcm-legend">
+                                        <span>0% Co-occurrence</span>
+                                        <div class="legend-gradient"></div>
+                                        <span>High Probability</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="vector-table-view" class="subtab-panel">
+                                <div class="table-scroll-wrap">
+                                    <table class="data-table" id="featureVectorTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Feature Name</th>
+                                                <th>Extracted Value</th>
+                                                <th>Clinical Relevance</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Dynamically populated -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STAGE 4: ML MODEL TRAINING -->
+                    <div class="card glass-panel" id="card-stage-4">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="stage-tag">STAGE 4</span>
+                                <h3>Machine Learning Model Training</h3>
+                            </div>
+                            <span class="card-status-badge badge-ready" id="stage4-badge">Ready</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="training-setup-grid">
+                                <div class="control-group">
+                                    <label class="label-caption">Select ML Algorithm:</label>
+                                    <select id="selectAlgorithm" class="select-dropdown">
+                                        <option value="Random Forest" selected>Random Forest Classifier (Ensemble)</option>
+                                        <option value="SVM">Support Vector Machine (SVM - RBF)</option>
+                                        <option value="KNN">K-Nearest Neighbors (KNN)</option>
+                                        <option value="Decision Tree">Decision Tree Classifier (CART)</option>
+                                        <option value="Logistic Regression">Logistic Regression (L2)</option>
+                                    </select>
+                                </div>
+
+                                <div class="control-group">
+                                    <label class="label-caption">Train / Test Split Ratio:</label>
+                                    <select id="selectSplit" class="select-dropdown">
+                                        <option value="0.2" selected>80% Train / 20% Test Split</option>
+                                        <option value="0.25">75% Train / 25% Test Split</option>
+                                        <option value="0.3">70% Train / 30% Test Split</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Hyperparameters panel -->
+                            <div class="hyperparams-bar" id="hyperparamsBar">
+                                <div class="hyper-item" id="hpParam1">
+                                    <label>Estimators (Trees):</label>
+                                    <input type="number" id="inputParam1" value="100" min="10" max="500">
+                                </div>
+                                <div class="hyper-item" id="hpParam2">
+                                    <label>Max Depth:</label>
+                                    <input type="number" id="inputParam2" value="10" min="2" max="30">
+                                </div>
+                            </div>
+
+                            <button id="btnTrainModel" class="btn btn-primary btn-full">
+                                <span class="btn-icon">🧠</span> Train Algorithm on Dataset
+                            </button>
+
+                            <!-- Live Training Progress Bar -->
+                            <div class="train-progress-wrap" id="trainProgressWrap" style="display: none;">
+                                <div class="train-progress-bar">
+                                    <div class="train-progress-fill" id="trainProgressFill"></div>
+                                </div>
+                                <div class="train-progress-text" id="trainProgressText">Training ensemble model...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STAGE 5: PERFORMANCE EVALUATION & PREDICTION -->
+                    <div class="card glass-panel highlight-border" id="card-stage-5">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="stage-tag active">STAGE 5</span>
+                                <h3>Performance Evaluation & Patient Diagnosis</h3>
+                            </div>
+                            <button id="btnPredictPatient" class="btn btn-success btn-glow">
+                                <span class="btn-icon">🩺</span> Run Diagnosis
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <!-- Hero Patient Diagnosis Result -->
+                            <div class="diagnosis-hero-card" id="diagnosisHero">
+                                <div class="diag-gauge-col">
+                                    <div class="risk-gauge-circle" id="riskGaugeCircle">
+                                        <svg viewBox="0 0 120 120" class="gauge-svg">
+                                            <circle class="gauge-bg" cx="60" cy="60" r="50"></circle>
+                                            <circle class="gauge-fill" id="gaugeFillCircle" cx="60" cy="60" r="50" style="stroke-dashoffset: 314;"></circle>
+                                        </svg>
+                                        <div class="gauge-text-inner">
+                                            <span class="gauge-percent" id="diagConfidence">99.4%</span>
+                                            <span class="gauge-label">Confidence</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="diag-info-col">
+                                    <div class="diag-status-row">
+                                        <span class="risk-badge badge-green" id="diagRiskBadge">LOW RISK</span>
+                                        <span class="diag-model-tag" id="diagModelTag">Random Forest</span>
+                                    </div>
+                                    <h2 class="diag-prediction-title" id="diagPredictionTitle">Normal Healthy Sinus Rhythm</h2>
+                                    <p class="diag-explanation" id="diagSummary">
+                                        Cardiovascular markers and cardiac waveform trace indicate normal sinus rhythm and healthy myocardial perfusion.
+                                    </p>
+                                    <div class="diag-rec-box">
+                                        <strong>Cardiologist Guidance:</strong>
+                                        <span id="diagRecommendation">Maintain balanced Mediterranean diet, regular cardiovascular aerobic exercise (150 min/week), and periodic annual checkups.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Probability Distribution Bars -->
+                            <div class="prob-distribution-card">
+                                <h4>Multiclass Disease Probabilities</h4>
+                                <div class="prob-bars-list" id="probBarsList">
+                                    <!-- Rendered dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- Quick Evaluation Metrics Grid -->
+                            <div class="metrics-mini-grid" id="metricsMiniGrid">
+                                <div class="metric-pill">
+                                    <span class="metric-k">Test Accuracy</span>
+                                    <span class="metric-v highlight-green" id="evalAcc">99.4%</span>
+                                </div>
+                                <div class="metric-pill">
+                                    <span class="metric-k">Precision</span>
+                                    <span class="metric-v" id="evalPrec">99.4%</span>
+                                </div>
+                                <div class="metric-pill">
+                                    <span class="metric-k">Recall / Sens</span>
+                                    <span class="metric-v" id="evalRec">99.4%</span>
+                                </div>
+                                <div class="metric-pill">
+                                    <span class="metric-k">F1-Score</span>
+                                    <span class="metric-v highlight-cyan" id="evalF1">99.4%</span>
+                                </div>
+                            </div>
+
+                            <button id="btnPrintReport" class="btn btn-outline btn-full">
+                                <span class="btn-icon">📄</span> Export / Print Clinical Diagnostic Report
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: CLINICAL DIAGNOSIS HUB             -->
+        <!-- ========================================== -->
+        <section id="diagnosis-tab" class="tab-panel">
+            <div class="card glass-panel">
+                <div class="card-header">
+                    <div class="card-title">
+                        <h2>Clinical Diagnostic Command Center</h2>
+                        <p class="card-subtitle">Comprehensive patient cardiac report, risk stratification, and biomarker analysis</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="clinical-hub-layout">
+                        <!-- Patient Profile Card -->
+                        <div class="patient-profile-card glass-panel">
+                            <div class="profile-header">
+                                <div class="profile-avatar">🫀</div>
+                                <div>
+                                    <h3 id="hubPatientName">Patient: Normal Sinus Rhythm Sample</h3>
+                                    <span class="profile-id">ID: MED-2026-0884</span>
+                                </div>
+                            </div>
+                            <div class="profile-details-grid">
+                                <div class="p-detail"><span>Age:</span> <strong id="hubAge">42</strong></div>
+                                <div class="p-detail"><span>Gender:</span> <strong id="hubGender">Female</strong></div>
+                                <div class="p-detail"><span>Blood Pressure:</span> <strong id="hubBp">118/76 mmHg</strong></div>
+                                <div class="p-detail"><span>Resting Heart Rate:</span> <strong id="hubHr">72 bpm</strong></div>
+                                <div class="p-detail"><span>Cardiothoracic Ratio:</span> <strong id="hubCtr">0.44 (Normal)</strong></div>
+                                <div class="p-detail"><span>ST Deviation:</span> <strong id="hubSt">0.05 mV (Baseline)</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- Full Clinical Summary & Treatment Pathway -->
+                        <div class="treatment-pathway-card glass-panel">
+                            <h3>Diagnostic Findings & Action Protocol</h3>
+                            <div class="finding-alert" id="hubFindingAlert">
+                                <div class="alert-icon">✓</div>
+                                <div class="alert-body">
+                                    <h4 id="hubFindingTitle">No Acute Cardiovascular Anomalies Detected</h4>
+                                    <p id="hubFindingText">ECG P-QRS-T sequence matches physiological sinus rhythm without pathological Q-waves or ectopic morphology.</p>
+                                </div>
+                            </div>
+
+                            <div class="pathway-steps">
+                                <div class="p-step">
+                                    <div class="p-step-num">1</div>
+                                    <div class="p-step-content">
+                                        <strong>Diagnostic Verification:</strong> Continuous 3-lead monitoring and correlation with standard biomarkers (Troponin I, CK-MB).
+                                    </div>
+                                </div>
+                                <div class="p-step">
+                                    <div class="p-step-num">2</div>
+                                    <div class="p-step-content">
+                                        <strong>Risk Factor Mitigation:</strong> Blood pressure control, lipid profile optimization, and lifestyle regulation.
+                                    </div>
+                                </div>
+                                <div class="p-step">
+                                    <div class="p-step-num">3</div>
+                                    <div class="p-step-content">
+                                        <strong>Follow-up Schedule:</strong> Repeat clinical evaluation within 6 to 12 months as indicated by cardiovascular risk score.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: ML EVALUATION & METRICS             -->
+        <!-- ========================================== -->
+        <section id="evaluation-tab" class="tab-panel">
+            <div class="eval-grid">
+                <!-- Confusion Matrix -->
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3>Confusion Matrix (Multiclass Heatmap)</h3>
+                            <p class="card-subtitle">Predicted Class vs. Ground Truth Class</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="confusion-matrix-wrapper">
+                            <div class="cm-table-wrap" id="cmTableWrap">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROC Curve Chart -->
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3>Receiver Operating Characteristic (ROC-AUC)</h3>
+                            <p class="card-subtitle">One-vs-Rest ROC curves for all 5 cardiac conditions</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="roc-chart-container">
+                            <svg id="rocSvgChart" viewBox="0 0 400 300" class="roc-svg">
+                                <!-- SVG ROC chart elements drawn dynamically -->
+                            </svg>
+                            <div class="roc-legend" id="rocLegend">
+                                <!-- Rendered dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Per-Class Classification Report Table -->
+                <div class="card glass-panel full-width">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3>Detailed Classification Performance Report</h3>
+                            <p class="card-subtitle">Precision, Recall, F1-Score, and Support across all cardiac disease classes</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="data-table" id="classificationReportTable">
+                            <thead>
+                                <tr>
+                                    <th>Cardiac Diagnostic Class</th>
+                                    <th>Precision (%)</th>
+                                    <th>Recall / Sensitivity (%)</th>
+                                    <th>F1-Score (%)</th>
+                                    <th>Test Support</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Rendered dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: CODE STUDIO & LIVE RUNNER           -->
+        <!-- ========================================== -->
+        <section id="code-tab" class="tab-panel">
+            <div class="code-studio-layout">
+                <!-- Editor Sidebar & Toolbar -->
+                <div class="code-studio-panel glass-panel">
+                    <div class="studio-header">
+                        <div class="studio-title-row">
+                            <div class="studio-title">
+                                <span class="terminal-icon">⌨️</span>
+                                <h3>Interactive Python Code Studio</h3>
+                            </div>
+                            <span class="badge-studio">Live Python 3.14 Execution</span>
+                        </div>
+                        <p class="studio-subtitle">
+                            Type your code, modify machine learning parameters, compile, and run scripts directly in this embedded development environment!
+                        </p>
+                    </div>
+
+                    <div class="studio-toolbar">
+                        <div class="file-picker-group">
+                            <label>File / Script:</label>
+                            <select id="codeFileSelector" class="select-dropdown-sm">
+                                <option value="train_model.py">train_model.py (ML Training)</option>
+                                <option value="test_predict.py">test_predict.py (CLI Prediction)</option>
+                                <option value="preprocess.py">preprocess.py (Image Preprocessor)</option>
+                                <option value="feature_extraction.py">feature_extraction.py (Feature Extraction)</option>
+                                <option value="app.py">app.py (Web Application Server)</option>
+                                <option value="custom">✏️ Type Custom Code...</option>
+                            </select>
+                        </div>
+
+                        <div class="studio-actions">
+                            <button id="btnRunCode" class="btn btn-primary btn-glow">
+                                <span class="btn-icon">▶</span> Run Code / Compile
+                            </button>
+                            <button id="btnResetCode" class="btn btn-outline btn-sm">
+                                <span class="btn-icon">↺</span> Reset
+                            </button>
+                            <button id="btnCopyCode" class="btn btn-outline btn-sm">
+                                <span class="btn-icon">📋</span> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Code Editor Box -->
+                    <div class="code-editor-wrapper">
+                        <div class="code-line-numbers" id="codeLineNumbers">
+                            <!-- Populated dynamically -->
+                        </div>
+                        <textarea id="codeTextarea" class="code-textarea" spellcheck="false"></textarea>
+                    </div>
+                </div>
+
+                <!-- Integrated Terminal / Output Console -->
+                <div class="terminal-panel glass-panel">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <span class="dot dot-red"></span>
+                            <span class="dot dot-yellow"></span>
+                            <span class="dot dot-green"></span>
+                        </div>
+                        <div class="terminal-title">Python Terminal & Compiler Console</div>
+                        <div class="terminal-meta">
+                            <span id="termStatusBadge" class="term-badge badge-ready">Idle</span>
+                            <span id="termExecTime" class="term-time">-- ms</span>
+                        </div>
+                    </div>
+                    <div class="terminal-body" id="terminalOutput">
+<span class="term-welcome">[CardioVision Python Environment Initialized]
+Operating System: Windows 64-bit
+Python Engine   : Python 3.14 (Active)
+Libraries Loaded: Flask, Scikit-Learn, NumPy, SciPy, Pillow, Joblib
+
+Select a script above or type your Python code and click "▶ Run Code / Compile".
+Output and runtime diagnostics will stream here in real-time.</span>
+                    </div>
+                    <div class="terminal-footer">
+                        <button id="btnClearTerminal" class="btn btn-sm btn-outline">Clear Console</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: HOW TO COMPILE & RUN GUIDE          -->
+        <!-- ========================================== -->
+        <section id="guide-tab" class="tab-panel">
+            <div class="guide-layout">
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2>How to Compile & Run the Project</h2>
+                            <p class="card-subtitle">Complete step-by-step instructions for Windows Command Prompt, PowerShell, or any IDE</p>
+                        </div>
+                    </div>
+                    <div class="card-body guide-content">
+
+                        <!-- Step 1 -->
+                        <div class="guide-step-card">
+                            <div class="guide-step-badge">STEP 1</div>
+                            <div class="guide-step-body">
+                                <h3>Verify Python & Install Dependencies</h3>
+                                <p>Open Windows PowerShell or Command Prompt, navigate to the project directory, and install the required machine learning and web server packages:</p>
+                                <div class="code-block-wrap">
+                                    <pre><code>python -m pip install -r requirements.txt</code></pre>
+                                    <button class="btn-copy-code" data-copy="python -m pip install -r requirements.txt">Copy</button>
+                                </div>
+                                <p class="guide-note">Packages installed: <code>flask</code>, <code>pillow</code>, <code>numpy</code>, <code>scikit-learn</code>, <code>scipy</code>.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="guide-step-card">
+                            <div class="guide-step-badge">STEP 2</div>
+                            <div class="guide-step-body">
+                                <h3>Generate Medical Sample Images (Optional)</h3>
+                                <p>To generate the high-resolution clinical ECG traces and cardiac scans used by the demo:</p>
+                                <div class="code-block-wrap">
+                                    <pre><code>python generate_sample_images.py</code></pre>
+                                    <button class="btn-copy-code" data-copy="python generate_sample_images.py">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="guide-step-card">
+                            <div class="guide-step-badge">STEP 3</div>
+                            <div class="guide-step-body">
+                                <h3>Train the Machine Learning Models</h3>
+                                <p>Train Random Forest, SVM, KNN, and Decision Tree on the cardiovascular dataset and evaluate metrics:</p>
+                                <div class="code-block-wrap">
+                                    <pre><code>python train_model.py</code></pre>
+                                    <button class="btn-copy-code" data-copy="python train_model.py">Copy</button>
+                                </div>
+                                <p class="guide-note">Generates <code>models/best_heart_model.pkl</code> and computes 99%+ test accuracy.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="guide-step-card">
+                            <div class="guide-step-badge">STEP 4</div>
+                            <div class="guide-step-body">
+                                <h3>Run Test Prediction from Command Line</h3>
+                                <p>To test prediction from terminal without a browser:</p>
+                                <div class="code-block-wrap">
+                                    <pre><code>python test_predict.py</code></pre>
+                                    <button class="btn-copy-code" data-copy="python test_predict.py">Copy</button>
+                                </div>
+                                <p>Or specify a custom image file:</p>
+                                <div class="code-block-wrap">
+                                    <pre><code>python test_predict.py --image path/to/your/image.png</code></pre>
+                                    <button class="btn-copy-code" data-copy="python test_predict.py --image path/to/your/image.png">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="guide-step-card highlight-step">
+                            <div class="guide-step-badge">STEP 5</div>
+                            <div class="guide-step-body">
+                                <h3>Launch the One-Frame Web Application</h3>
+                                <p>Launch the Flask server to open the interactive dashboard:</p>
+                                <div class="code-block-wrap">
+                                    <pre><code>python app.py</code></pre>
+                                    <button class="btn-copy-code" data-copy="python app.py">Copy</button>
+                                </div>
+                                <p>Then open your browser and navigate to: <a href="http://127.0.0.1:5000" target="_blank" class="guide-link">http://127.0.0.1:5000</a></p>
+                            </div>
+                        </div>
+
+                        <!-- Architecture Summary -->
+                        <div class="architecture-summary">
+                            <h3>Project File Architecture</h3>
+                            <div class="arch-grid">
+                                <div class="arch-item">
+                                    <strong>app.py</strong>
+                                    <span>Flask server, REST API endpoints, and live code execution controller.</span>
+                                </div>
+                                <div class="arch-item">
+                                    <strong>preprocess.py</strong>
+                                    <span>Grayscale, Gaussian/Median filtering, CLAHE contrast equalization, thresholding, edge detection.</span>
+                                </div>
+                                <div class="arch-item">
+                                    <strong>feature_extraction.py</strong>
+                                    <span>GLCM texture matrix (contrast, homogeneity, energy, correlation), statistical moments, cardiac wave metrics.</span>
+                                </div>
+                                <div class="arch-item">
+                                    <strong>train_model.py</strong>
+                                    <span>Random Forest, SVM, KNN, Decision Tree training, scaling, confusion matrix, ROC-AUC calculation.</span>
+                                </div>
+                                <div class="arch-item">
+                                    <strong>test_predict.py</strong>
+                                    <span>Command-line execution script for batch testing.</span>
+                                </div>
+                                <div class="arch-item">
+                                    <strong>generate_sample_images.py</strong>
+                                    <span>High-resolution ECG trace and cardiac silhouette generator for 5 target classes.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Printable Clinical Report Modal -->
+    <div class="modal-overlay" id="reportModal" style="display: none;">
+        <div class="modal-card glass-panel">
+            <div class="modal-header">
+                <h3>CardioVision AI Diagnostic Laboratory Report</h3>
+                <button class="modal-close" id="btnCloseModal">&times;</button>
+            </div>
+            <div class="modal-body printable-area" id="printableReport">
+                <div class="report-header">
+                    <div class="report-lab-title">CARDIOVASCULAR AI DIAGNOSTIC REPORT</div>
+                    <div class="report-date" id="reportDate">Date: September 2026</div>
+                </div>
+                <hr>
+                <div class="report-patient-info">
+                    <div><strong>Patient Name:</strong> <span id="repPatientName">Normal Sample</span></div>
+                    <div><strong>Patient ID:</strong> <span id="repPatientId">MED-2026-0884</span></div>
+                    <div><strong>Age / Gender:</strong> <span id="repDemographics">42y / Female</span></div>
+                    <div><strong>Resting BP:</strong> <span id="repBp">118/76 mmHg</span></div>
+                </div>
+                <hr>
+                <div class="report-diagnosis-section">
+                    <h4>PRIMARY MACHINE LEARNING DIAGNOSTIC FINDING</h4>
+                    <div class="report-outcome-box" id="repOutcomeBox">
+                        <div class="rep-title" id="repFindingTitle">Normal Sinus Rhythm</div>
+                        <div class="rep-confidence">Model Confidence: <span id="repConfidence">99.4%</span> (Model: <span id="repModel">Random Forest</span>)</div>
+                        <div class="rep-risk">Risk Stratification: <strong id="repRisk">Low</strong></div>
+                    </div>
+                </div>
+                <div class="report-features-section">
+                    <h4>EXTRACTED CARDIAC BIOMARKERS</h4>
+                    <div class="rep-features-grid" id="repFeaturesGrid">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+                <div class="report-recommendations">
+                    <h4>CLINICAL INTERPRETATION & RECOMMENDATIONS</h4>
+                    <p id="repRecommendation">Maintain balanced Mediterranean diet, regular aerobic exercise, and periodic checkup.</p>
+                </div>
+                <div class="report-signature">
+                    <div>Attending Cardiologist Signature: _______________________</div>
+                    <div>AI System Version: CardioVision ML 2.5 (Verified)</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button>
+                <button class="btn btn-outline" id="btnDismissModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
